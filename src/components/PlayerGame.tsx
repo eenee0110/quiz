@@ -352,7 +352,7 @@ export default function PlayerGame({ onClose }: PlayerGameProps) {
   }, [allPlayers, player]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 pb-32 md:pb-8 bg-[#0A0A0A] relative overflow-hidden font-sans">
+    <div className="h-[100dvh] w-full flex flex-col items-center justify-center p-6 pb-24 md:pb-8 bg-[#0A0A0A] relative overflow-hidden font-sans">
       <GameBackground url={session?.backgroundImageUrl} />
 
       {loading && (
@@ -469,7 +469,7 @@ export default function PlayerGame({ onClose }: PlayerGameProps) {
              )}
 
              {session.status === 'QUESTION' && currentQuestion && (
-               <div className="space-y-6 relative min-h-[70vh] py-8 flex flex-col justify-center">
+               <div className="flex-1 w-full flex flex-col pt-2 pb-6">
                   <AnimatePresence>
                     {isPaused && (
                       <motion.div 
@@ -479,47 +479,49 @@ export default function PlayerGame({ onClose }: PlayerGameProps) {
                         className="absolute inset-[-40px] bg-black/95 backdrop-blur-3xl z-[60] flex flex-col items-center justify-center rounded-[4rem] border-4 border-[#00FF00]/20 p-12 text-center"
                       >
                          <Pause size={100} className="text-[#00FF00] animate-pulse mb-8" />
-                         <h3 className="text-3xl sm:text-5xl md:text-6xl font-black uppercase italic tracking-[-0.05em] leading-0.85 mb-6 px-2 break-words max-w-[90vw] mx-auto">ТОГЛООМ<br/><span className="text-[#00FF00]">ТҮР ЗОГСЛОО</span></h3>
+                         <h3 className="text-3xl sm:text-5xl md:text-6xl font-black uppercase italic tracking-[-0.05em] leading-[0.85] mb-6 px-2 break-words max-w-[90vw] mx-auto">ТОГЛООМ<br/><span className="text-[#00FF00]">ТҮР ЗОГСЛОО</span></h3>
                          <p className="text-white/30 font-black uppercase tracking-[0.4em] text-xs">Удахгүй үргэлжилнэ</p>
                       </motion.div>
                     )}
                   </AnimatePresence>
 
                   {!hasAnswered ? (
-                    <div className="flex flex-col gap-4 w-full">
-                       <div className="text-center shrink-0 flex flex-col mb-2">
+                    <div className="flex flex-col w-full h-full">
+                       <div className="text-center shrink-0 flex flex-col mb-4">
                           <div className="text-[#00FF00] font-black uppercase tracking-[0.6em] text-[10px] mb-2 shrink-0">Асуулт ирлээ</div>
-                          <div className="px-4 mb-4 break-words flex flex-col justify-center">
+                          <div className="px-4 mb-4 break-words flex flex-col justify-center max-h-[25vh] overflow-y-auto custom-scrollbar">
                              <h2 className={`font-black italic tracking-tighter leading-tight whitespace-pre-wrap ${currentQuestion.text.length > 100 ? 'text-lg md:text-xl' : currentQuestion.text.length > 50 ? 'text-xl md:text-2xl' : 'text-2xl md:text-3xl'}`}>{currentQuestion.text}</h2>
                           </div>
                           <div className="h-3 bg-white/5 rounded-full overflow-hidden border border-white/5 p-[2px] shrink-0">
                              <motion.div 
-                               initial={{ width: "100%" }}
+                               initial={{ width: `${session && (session as any).questionEndsAt ? Math.max(0, Math.min(100, (((session as any).questionEndsAt - Date.now()) / (currentQuestion.timeLimit * 1000)) * 100)) : 100}%` }}
                                animate={{ width: "0%" }}
-                               transition={{ duration: currentQuestion.timeLimit, ease: "linear" }}
+                               transition={{ duration: session && (session as any).questionEndsAt ? Math.max(0, ((session as any).questionEndsAt - Date.now()) / 1000) : currentQuestion.timeLimit, ease: "linear" }}
                                className="h-full bg-[#00FF00] rounded-full shadow-[0_0_10px_#00FF00]"
                              />
                           </div>
                        </div>
                        
-                       <div className="flex flex-col gap-3 min-h-min w-full pb-8">
-                         {currentQuestion.options.map((opt, i) => (
-                           <motion.button
-                              key={i}
-                              whileTap={{ scale: 0.92 }}
-                              onClick={() => submitChoice(i)}
-                              className={`p-4 sm:p-6 lg:p-8 rounded-2xl lg:rounded-[2rem] flex items-center justify-between border-2 sm:border-4 border-black transition-all ${SHAPES[i].color} text-black relative overflow-hidden group shadow-[0_6px_0_0_rgba(0,0,0,1)] lg:shadow-[0_8px_0_0_rgba(0,0,0,1)] active:shadow-none translate-y-0 active:translate-y-1 lg:active:translate-y-2 shrink-0`}
-                           >
-                              <div className="flex items-center gap-3 sm:gap-6 relative z-10 w-full overflow-hidden">
-                                 <div className="flex-shrink-0 opacity-20 group-hover:scale-125 transition-transform w-[24px] h-[24px] sm:w-[32px] sm:h-[32px] lg:w-[40px] lg:h-[40px] flex items-center justify-center">
-                                    {SHAPES[i].icon}
-                                 </div>
-                                 <div className="text-left flex-1 min-w-0 flex items-center">
-                                    <span className="text-base sm:text-xl lg:text-3xl font-black italic tracking-[-0.05em] leading-[1] uppercase whitespace-normal break-words inline-block w-full">{opt}</span>
-                                 </div>
-                              </div>
-                           </motion.button>
-                         ))}
+                       <div className="flex-1 overflow-y-auto custom-scrollbar pr-1 pb-4">
+                         <div className="flex flex-col gap-3 w-full pb-8">
+                           {currentQuestion.options.map((opt, i) => (
+                             <motion.button
+                                key={i}
+                                whileTap={{ scale: 0.92 }}
+                                onClick={() => submitChoice(i)}
+                                className={`p-4 sm:p-6 lg:p-8 rounded-2xl lg:rounded-[2rem] flex items-center justify-between border-2 sm:border-4 border-black transition-all ${SHAPES[i].color} text-black relative overflow-hidden group shadow-[0_6px_0_0_rgba(0,0,0,1)] lg:shadow-[0_8px_0_0_rgba(0,0,0,1)] active:shadow-none translate-y-0 active:translate-y-1 lg:active:translate-y-2 shrink-0`}
+                             >
+                                <div className="flex items-center gap-3 sm:gap-6 relative z-10 w-full overflow-hidden">
+                                   <div className="flex-shrink-0 opacity-20 group-hover:scale-125 transition-transform w-[24px] h-[24px] sm:w-[32px] sm:h-[32px] lg:w-[40px] lg:h-[40px] flex items-center justify-center">
+                                      {SHAPES[i].icon}
+                                   </div>
+                                   <div className="text-left flex-1 min-w-0 flex items-center">
+                                      <span className="text-base sm:text-xl lg:text-3xl font-black italic tracking-[-0.05em] leading-[1] uppercase whitespace-normal break-words inline-block w-full">{opt}</span>
+                                   </div>
+                                </div>
+                             </motion.button>
+                           ))}
+                         </div>
                        </div>
                     </div>
                   ) : (
@@ -567,6 +569,13 @@ export default function PlayerGame({ onClose }: PlayerGameProps) {
                        </motion.div>
                        <h2 className="text-5xl md:text-8xl font-black italic uppercase tracking-[-0.08em] leading-none mb-8 md:mb-12 break-words max-w-[90vw] mx-auto">{isCorrect ? 'ЗӨВ!' : 'БУРУУ!'}</h2>
                        
+                       {!isCorrect && currentQuestion && (
+                          <div className="mb-8 md:mb-12 flex flex-col items-center bg-black/10 py-4 px-6 rounded-3xl border border-current/20">
+                             <div className="text-[10px] font-black uppercase tracking-[0.6em] opacity-60 mb-2">ЗӨВ ХАРИУЛТ:</div>
+                             <div className="text-xl sm:text-2xl font-black italic uppercase tracking-[-0.05em] leading-tight break-words max-w-[80vw] mx-auto opacity-90">{currentQuestion.options[currentQuestion.correctAnswerIndex]}</div>
+                          </div>
+                       )}
+
                        <div className="flex flex-col items-center pt-8 md:pt-12 border-t-8 border-current/10">
                           <div className="text-[10px] font-black uppercase tracking-[0.6em] opacity-40 mb-2 md:mb-4">ОНОО:</div>
                           <div className="text-5xl md:text-7xl font-black italic tracking-tighter leading-none">+{pointsEarned} <span className="text-lg md:text-xl">ОНОО</span></div>
