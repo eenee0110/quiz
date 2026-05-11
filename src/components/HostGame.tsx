@@ -306,7 +306,7 @@ export default function HostGame({ quizId, onClose }: HostGameProps) {
                       animate={{ y: 0, opacity: 1 }}
                       className="mb-8"
                     >
-                      <h1 className="text-6xl md:text-8xl xl:text-[110px] font-black uppercase italic tracking-[-0.08em] leading-[0.85] mb-6 md:mb-8">
+                      <h1 className="text-5xl sm:text-6xl md:text-8xl xl:text-[90px] font-black uppercase italic tracking-[-0.08em] leading-[0.85] mb-6 md:mb-8">
                         ТОГЛООМД<br />
                         <span className="text-[#00FF00]">НЭГДЭХ</span>
                       </h1>
@@ -397,7 +397,7 @@ export default function HostGame({ quizId, onClose }: HostGameProps) {
                            <div className="h-1 flex-1 bg-[#00FF00]"></div>
                            <div className="text-[#00FF00] font-black uppercase tracking-[0.5em] text-[10px] md:text-xs shrink-0">АСУУЛТ {session.currentQuestionIndex + 1} // {questions.length}</div>
                         </div>
-                        <h2 className="text-3xl md:text-5xl xl:text-7xl font-black italic uppercase tracking-[-0.05em] leading-[0.9] mb-4 md:mb-12 relative z-10 whitespace-pre-wrap">
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black italic uppercase tracking-[-0.05em] leading-[0.9] mb-4 md:mb-12 relative z-10 whitespace-pre-wrap break-words">
                           {currentQ.text}
                         </h2>
                      </motion.div>
@@ -474,10 +474,10 @@ export default function HostGame({ quizId, onClose }: HostGameProps) {
               <motion.div 
                 initial={{ y: 50 }}
                 animate={{ y: 0 }}
-                className="bg-[#00FF00] text-black py-20 px-12 rounded-[5rem] text-6xl md:text-[10vw] font-black uppercase italic tracking-[-0.08em] leading-[0.8] mb-16 shadow-[30px_30px_0_0_#111] border-8 border-black relative overflow-hidden"
+                className="bg-[#00FF00] text-black py-12 px-6 md:py-20 md:px-12 rounded-[3rem] md:rounded-[5rem] text-4xl sm:text-5xl md:text-[8vw] font-black uppercase italic tracking-[-0.08em] leading-[0.8] mb-16 shadow-[0_20px_50px_rgba(0,255,0,0.3)] border-4 md:border-8 border-black relative overflow-hidden"
               >
-                <div className="relative z-10">{currentQ.options[currentQ.correctIndex]}</div>
-                <div className="absolute top-0 right-0 p-8 opacity-10"><CheckCircle2 size={200} /></div>
+                <div className="relative z-10 break-words">{currentQ.options[currentQ.correctIndex]}</div>
+                <div className="absolute top-0 right-0 p-8 opacity-10"><CheckCircle2 className="w-[120px] h-[120px] md:w-[200px] md:h-[200px]" /></div>
               </motion.div>
               
               <div className="flex flex-wrap justify-center gap-4 mb-24">
@@ -525,25 +525,25 @@ export default function HostGame({ quizId, onClose }: HostGameProps) {
                   <div className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20">Үе {session.currentQuestionIndex + 1} // Синх</div>
                 </div>
 
-                <div className="space-y-4">
+                 <div className="space-y-4 max-w-full overflow-hidden">
                   {topPlayers.map((p, i) => (
                     <motion.div 
                       key={p.id}
                       initial={{ opacity: 0, x: -50 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: i * 0.1 }}
-                      className={`flex items-center justify-between p-8 rounded-[2rem] border-4 transition-all ${i === 0 ? 'bg-[#00FF00] text-black border-[#00FF00] shadow-[0_20px_40px_rgba(0,255,0,0.2)]' : 'bg-white/5 border-white/5'}`}
+                      className={`flex flex-col sm:flex-row items-center sm:justify-between p-6 sm:p-8 gap-4 rounded-[2rem] border-4 transition-all overflow-hidden ${i === 0 ? 'bg-[#00FF00] text-black border-[#00FF00] shadow-[0_20px_40px_rgba(0,255,0,0.2)]' : 'bg-white/5 border-white/5'}`}
                     >
-                      <div className="flex items-center gap-8">
-                        <span className={`font-black text-5xl italic ${i === 0 ? 'opacity-100' : 'opacity-20'}`}>0{i + 1}</span>
-                        <div className="flex flex-col">
-                           <span className="font-black text-4xl uppercase italic tracking-[-0.05em] leading-none mb-1">{p.name}</span>
+                      <div className="flex items-center gap-4 sm:gap-8 w-full sm:w-auto">
+                        <span className={`font-black text-4xl sm:text-5xl italic ${i === 0 ? 'opacity-100' : 'opacity-20'}`}>0{i + 1}</span>
+                        <div className="flex flex-col min-w-0 flex-1">
+                           <span className="font-black text-2xl sm:text-4xl uppercase italic tracking-[-0.05em] leading-none mb-1 truncate">{p.name}</span>
                            <div className={`text-[10px] font-black uppercase tracking-[0.3em] ${i === 0 ? 'text-black/40' : 'text-white/20'}`}>Тоглогчийн нэр</div>
                         </div>
-                        {i === 0 && <Zap size={32} className="fill-current ml-2 animate-pulse" />}
+                        {i === 0 && <Zap size={24} className="fill-current ml-2 animate-pulse sm:w-[32px]" />}
                       </div>
-                      <div className="text-right">
-                         <div className="text-5xl font-black tracking-[-0.05em] leading-none mb-2">{p.score}</div>
+                      <div className="text-center sm:text-right w-full sm:w-auto border-t sm:border-t-0 pt-4 sm:pt-0 mt-2 sm:mt-0 border-current/20">
+                         <div className="text-4xl sm:text-5xl font-black tracking-[-0.05em] leading-none mb-1 sm:mb-2">{p.score}</div>
                          <div className={`text-[10px] font-black uppercase tracking-[0.2em] ${i === 0 ? 'text-black/40' : 'text-white/20'}`}>Нийт оноо</div>
                       </div>
                     </motion.div>
@@ -577,26 +577,26 @@ export default function HostGame({ quizId, onClose }: HostGameProps) {
                  <h1 className="text-[25vw] md:text-[300px] font-black uppercase italic tracking-[-0.1em] leading-none opacity-5 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 select-none">ТОГЛООМ</h1>
               </div>
               
-              <div className="bg-[#00FF00] text-black p-16 md:p-24 rounded-[6rem] shadow-[40px_40px_0_0_rgba(0,0,0,1)] border-[12px] border-black inline-block relative overflow-hidden group">
+              <div className="bg-[#00FF00] text-black w-full max-w-4xl p-10 md:p-16 xl:p-24 rounded-[4rem] md:rounded-[6rem] shadow-[0_20px_60px_rgba(0,255,0,0.2)] border-8 md:border-[12px] border-black inline-block relative overflow-hidden group">
                  <motion.div 
                    animate={{ x: [-500, 500] }}
                    transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12 pointer-events-none"
                  />
                  <div className="relative z-10">
-                   <div className="text-[10px] font-black uppercase tracking-[0.6em] opacity-40 mb-8 italic">Тоглоомын ялагч</div>
-                   <div className="text-8xl md:text-[12vw] font-black italic tracking-[-0.1em] uppercase leading-[0.8] mb-12">
+                   <div className="text-[10px] font-black uppercase tracking-[0.6em] opacity-40 mb-4 md:mb-8 italic break-words">Тоглоомын ялагч</div>
+                   <div className="text-5xl sm:text-6xl md:text-8xl xl:text-[10vw] font-black italic tracking-[-0.1em] uppercase leading-[0.8] mb-8 md:mb-12 break-words">
                      {[...players].sort((a, b) => b.score - a.score)[0]?.name || 'МЭДЭГДЭХГҮЙ'}
                    </div>
-                   <div className="flex items-center justify-center gap-12 border-t-8 border-black/5 pt-12">
-                      <div className="text-left">
+                   <div className="flex flex-col sm:flex-row items-center justify-center gap-8 md:gap-12 border-t-8 border-black/5 pt-8 md:pt-12">
+                      <div className="text-center sm:text-left">
                          <div className="text-[10px] font-black uppercase tracking-[0.4em] opacity-40 mb-2">Нийт оноо</div>
-                         <div className="text-6xl font-black italic tracking-tighter leading-none">{[...players].sort((a, b) => b.score - a.score)[0]?.score} <span className="text-2xl mt-auto">ОНОО</span></div>
+                         <div className="text-4xl sm:text-5xl md:text-6xl font-black italic tracking-tighter leading-none">{[...players].sort((a, b) => b.score - a.score)[0]?.score} <span className="text-xl md:text-2xl mt-auto">ОНОО</span></div>
                       </div>
-                      <div className="w-px h-16 bg-black/10"></div>
-                      <div className="text-right">
+                      <div className="w-full sm:w-px h-px sm:h-16 bg-black/10"></div>
+                      <div className="text-center sm:text-right">
                          <div className="text-[10px] font-black uppercase tracking-[0.4em] opacity-40 mb-2">Ялалтын бүртгэл</div>
-                         <div className="text-6xl font-black italic tracking-tighter leading-none">1-Р БАЙР</div>
+                         <div className="text-4xl sm:text-5xl md:text-6xl font-black italic tracking-tighter leading-none">1-Р БАЙР</div>
                       </div>
                    </div>
                  </div>

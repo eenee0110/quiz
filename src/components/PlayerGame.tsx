@@ -429,14 +429,14 @@ export default function PlayerGame({ onClose }: PlayerGameProps) {
                       <h3 className="text-3xl sm:text-4xl md:text-6xl font-black uppercase italic tracking-[-0.05em] mb-4 md:mb-6 leading-[0.8] px-2 break-words max-w-[90vw] mx-auto">БЭЛЭН<br/><span className="text-[#00FF00]">БАЙГААРАЙ</span></h3>
                       <div className="text-white/20 font-black uppercase tracking-[0.4em] text-[8px] md:text-[10px]">Зохион байгуулагчийг хүлээж байна</div>
                    </motion.div>
-                   <div className="text-white/[0.015] font-black text-7xl md:text-[160px] uppercase italic tracking-tighter select-none whitespace-nowrap overflow-hidden text-ellipsis absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 leading-none w-full px-4 text-center">
+                   <div className="text-white/[0.015] font-black text-6xl md:text-9xl uppercase italic tracking-tighter select-none whitespace-nowrap overflow-hidden text-ellipsis absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 leading-none w-full px-4 text-center">
                      {name}
                    </div>
                 </div>
              )}
 
              {session.status === 'QUESTION' && currentQuestion && (
-               <div className="space-y-6 relative h-[70vh] flex flex-col justify-center">
+               <div className="space-y-6 relative min-h-[70vh] py-8 flex flex-col justify-center">
                   <AnimatePresence>
                     {isPaused && (
                       <motion.div 
@@ -553,12 +553,12 @@ export default function PlayerGame({ onClose }: PlayerGameProps) {
                    <motion.div 
                      initial={{ scale: 0.9, y: 50 }}
                      animate={{ scale: 1, y: 0 }}
-                     className="bg-white text-black p-20 rounded-[6rem] shadow-[40px_40px_0_0_rgba(0,0,0,1)] border-[12px] border-black relative overflow-hidden"
+                     className="bg-white text-black p-8 md:p-16 rounded-[3rem] md:rounded-[5rem] shadow-[15px_15px_0_0_rgba(0,0,0,1)] md:shadow-[30px_30px_0_0_rgba(0,0,0,1)] border-8 md:border-[12px] border-black relative overflow-hidden"
                    >
-                      <div className="relative z-10">
-                        <div className="text-xs font-black uppercase tracking-[0.5em] opacity-40 mb-8">Нийт чансаа</div>
-                        <div className="text-[10rem] font-black italic tracking-[-0.1em] leading-none mb-8">#{myRank}</div>
-                        <div className="pt-12 border-t-8 border-black/5 flex items-center justify-center gap-6 text-3xl font-black italic tracking-[-0.05em]">
+                      <div className="relative z-10 w-full overflow-hidden">
+                        <div className="text-xs font-black uppercase tracking-[0.5em] opacity-40 mb-4 md:mb-8 break-words">Нийт чансаа</div>
+                        <div className="text-7xl md:text-[10rem] font-black italic tracking-[-0.1em] leading-none mb-6 md:mb-8 break-words">#{myRank}</div>
+                        <div className="pt-8 md:pt-12 border-t-8 border-black/5 flex items-center justify-center gap-4 md:gap-6 text-2xl md:text-3xl font-black italic tracking-[-0.05em] flex-wrap">
                            {player?.streak || 0} <Zap size={40} className="fill-[#00FF00] -rotate-12" /> <span className="opacity-40">ДАРААЛСАН</span>
                         </div>
                       </div>
@@ -586,19 +586,19 @@ export default function PlayerGame({ onClose }: PlayerGameProps) {
                       <Trophy size={140} className="text-[#FFFF44] mx-auto drop-shadow-[0_0_50px_#FFFF44]" />
                    </motion.div>
                    
-                   <div className="bg-[#00FF00] text-black p-16 rounded-[6rem] shadow-[30px_30px_0_0_rgba(0,0,0,1)] border-[12px] border-black relative overflow-hidden">
+                   <div className="bg-[#00FF00] text-black p-8 md:p-16 rounded-[3rem] md:rounded-[5rem] shadow-[15px_15px_0_0_rgba(0,0,0,1)] md:shadow-[30px_30px_0_0_rgba(0,0,0,1)] border-8 md:border-[12px] border-black relative overflow-hidden">
                       <div className="relative z-10">
-                        <div className="text-[10px] font-black uppercase tracking-[0.6em] opacity-40 mb-6 italic">Аренагийн ялагч</div>
-                        <div className="text-8xl font-black italic tracking-[-0.08em] leading-[0.8] mb-12 uppercase text-center">{name}</div>
+                        <div className="text-[10px] font-black uppercase tracking-[0.6em] opacity-40 mb-4 md:mb-6 italic break-words">Аренагийн ялагч</div>
+                        <div className="text-5xl md:text-8xl font-black italic tracking-[-0.08em] leading-[0.8] mb-8 md:mb-12 uppercase text-center break-words max-w-[90vw] mx-auto">{name}</div>
                         
-                        <div className="flex flex-col gap-8 pt-12 border-t-8 border-black/10">
-                           <div className="flex items-center justify-between px-8">
-                             <span className="text-[10px] font-black uppercase tracking-[0.4em] opacity-30">Нийт оноо</span>
-                             <span className="text-5xl font-black italic tracking-tighter">{player?.score} <span className="text-xl">ОНОО</span></span>
+                        <div className="flex flex-col gap-6 md:gap-8 pt-8 md:pt-12 border-t-8 border-black/10">
+                           <div className="flex flex-col sm:flex-row items-center justify-between px-4 md:px-8 gap-2 border-b-2 sm:border-b-0 pb-4 sm:pb-0 border-black/5">
+                             <span className="text-[10px] text-center sm:text-left font-black uppercase tracking-[0.4em] opacity-30">Нийт оноо</span>
+                             <span className="text-4xl md:text-5xl font-black italic tracking-tighter">{player?.score} <span className="text-lg md:text-xl">ОНОО</span></span>
                            </div>
-                           <div className="flex items-center justify-between px-8">
-                             <span className="text-[10px] font-black uppercase tracking-[0.4em] opacity-30">Ялалтын бүртгэл</span>
-                             <span className="text-5xl font-black italic tracking-tighter">#{myRank}</span>
+                           <div className="flex flex-col sm:flex-row items-center justify-between px-4 md:px-8 gap-2">
+                             <span className="text-[10px] text-center sm:text-left font-black uppercase tracking-[0.4em] opacity-30">Ялалтын бүртгэл</span>
+                             <span className="text-4xl md:text-5xl font-black italic tracking-tighter">#{myRank}</span>
                            </div>
                         </div>
                       </div>
