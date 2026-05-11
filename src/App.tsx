@@ -181,7 +181,7 @@ function AppContent() {
                         transition={{ delay: 0.4 }}
                         className="text-white/40 max-w-md mx-auto text-sm md:text-lg font-black uppercase tracking-[0.3em] italic"
                       >
-                        Өндөр хүчдэлтэй тоглоомын талбар
+                        Ухаанаа уралдуулж, мэдлэгээ бататга
                       </motion.p>
                     </div>
                     

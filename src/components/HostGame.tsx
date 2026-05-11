@@ -344,7 +344,7 @@ export default function HostGame({ quizId, onClose }: HostGameProps) {
                      <motion.div 
                        initial={{ x: 50, opacity: 0 }}
                        animate={{ x: 0, opacity: 1 }}
-                       className="bg-white p-6 md:p-10 rounded-3xl md:rounded-[4rem] shadow-[15px_15px_0_0_#999] md:shadow-[30px_30px_0_0_#999] hover:shadow-[15px_15px_0_0_#00FF00] md:hover:shadow-[30px_30px_0_0_#00FF00] transition-all border-4 md:border-8 border-black cursor-pointer max-w-[90vw]"
+                       className="bg-white p-6 md:p-10 rounded-3xl md:rounded-[3rem] shadow-2xl hover:shadow-[#00FF00]/30 transition-all border-none cursor-pointer max-w-[90vw]"
                     >
                        <div className="flex justify-center">
                           <QRCodeSVG value={joinUrl} size={180} className="md:w-[240px] md:h-[240px] lg:w-[280px] lg:h-[280px]" bgColor="#ffffff" fgColor="#000000" level="H" />
@@ -381,78 +381,115 @@ export default function HostGame({ quizId, onClose }: HostGameProps) {
               initial={{ opacity: 0, scale: 0.95 }} 
               animate={{ opacity: 1, scale: 1 }} 
               exit={{ opacity: 0, scale: 1.05 }}
-              className="w-full"
+              className="w-full flex flex-col gap-8 md:gap-12"
             >
-               <div className="grid grid-cols-1 xl:grid-cols-2 gap-16 items-center">
-                  <div className="space-y-12">
-                     <motion.div 
-                       initial={{ x: -40 }}
-                       animate={{ x: 0 }}
-                       className="bg-white/5 p-6 md:p-12 xl:p-16 rounded-3xl md:rounded-[4rem] border-4 border-white/5 backdrop-blur-3xl relative overflow-hidden group shadow-3xl"
-                     >
-                        <div className="absolute -top-12 -right-12 p-4 opacity-[0.05] group-hover:opacity-10 transition-opacity rotate-12">
-                          <Zap size={240} />
-                        </div>
-                        <div className="flex items-center gap-4 mb-6 md:mb-8">
-                           <div className="h-1 flex-1 bg-[#00FF00]"></div>
-                           <div className="text-[#00FF00] font-black uppercase tracking-[0.5em] text-[10px] md:text-xs shrink-0">АСУУЛТ {session.currentQuestionIndex + 1} // {questions.length}</div>
-                        </div>
-                        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black italic uppercase tracking-[-0.05em] leading-[0.9] mb-4 md:mb-12 relative z-10 whitespace-pre-wrap break-words">
-                          {currentQ.text}
-                        </h2>
-                     </motion.div>
+               <motion.div 
+                 initial={{ y: -40, opacity: 0 }}
+                 animate={{ y: 0, opacity: 1 }}
+                 className="bg-white/5 p-8 md:p-12 xl:p-16 rounded-3xl md:rounded-[4rem] border-4 border-white/5 backdrop-blur-3xl relative overflow-hidden group shadow-3xl flex flex-col w-full"
+               >
+                  <div className="absolute -top-12 -right-12 p-4 opacity-[0.05] group-hover:opacity-10 transition-opacity rotate-12 pointer-events-none">
+                    <Zap size={240} />
+                  </div>
+                  <div className="flex items-center gap-4 mb-8 shrink-0">
+                     <div className="h-1 flex-1 bg-[#00FF00]"></div>
+                     <div className="text-[#00FF00] font-black uppercase tracking-[0.5em] text-[10px] md:text-sm shrink-0">АСУУЛТ {session.currentQuestionIndex + 1} // {questions.length}</div>
+                     <div className="h-1 flex-1 bg-[#00FF00]"></div>
+                  </div>
+                  <div className="flex-1 flex flex-col justify-center min-h-[150px]">
+                    <h2 className={`font-black italic uppercase tracking-[-0.05em] leading-[1.1] md:leading-[1] relative z-10 whitespace-pre-wrap text-center break-words w-full m-auto ${
+                      currentQ.text.length > 150 ? 'text-2xl md:text-4xl lg:text-5xl' : 
+                      currentQ.text.length > 80 ? 'text-3xl md:text-5xl lg:text-6xl' : 
+                      currentQ.text.length > 40 ? 'text-4xl md:text-6xl lg:text-[5.5rem]' : 
+                      'text-5xl md:text-7xl lg:text-[7rem]'
+                    }`}>
+                      {currentQ.text}
+                    </h2>
+                  </div>
+               </motion.div>
 
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {currentQ.options.map((opt, i) => (
-                           <motion.div 
-                              key={i} 
-                              initial={{ opacity: 0, y: 20 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: 0.2 + i * 0.1 }}
-                              className="bg-white/5 p-8 rounded-[2rem] border-2 border-white/5 text-3xl font-black italic tracking-tighter uppercase flex items-center gap-8 relative overflow-hidden"
-                           >
-                              <div className={`w-12 h-12 flex-shrink-0 rounded-2xl ${['bg-[#FF4444]', 'bg-[#4444FF]', 'bg-[#FFFF44]', 'bg-[#44FF44]'][i]} shadow-[0_4px_15px_rgba(0,0,0,0.5)]`}></div>
-                              <span className="leading-[0.9] pr-8 text-xl md:text-3xl whitespace-pre-wrap break-words">{opt}</span>
-                              <div className="absolute right-0 top-0 bottom-0 w-2 opacity-20" style={{ backgroundColor: ['#FF4444', '#4444FF', '#FFFF44', '#44FF44'][i] }}></div>
-                           </motion.div>
-                        ))}
-                     </div>
+               <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 md:gap-12 items-start">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 w-full">
+                     {currentQ.options.map((opt, i) => (
+                        <motion.div 
+                           key={i} 
+                           initial={{ opacity: 0, y: 20 }}
+                           animate={{ opacity: 1, y: 0 }}
+                           transition={{ delay: 0.2 + i * 0.1 }}
+                           className="bg-white/5 p-6 sm:p-8 rounded-[2rem] border-2 border-white/5 font-black italic tracking-tighter flex items-center gap-4 sm:gap-8 relative overflow-hidden shadow-xl"
+                        >
+                           <div className={`w-8 h-8 sm:w-12 sm:h-12 flex-shrink-0 rounded-xl sm:rounded-2xl ${['bg-[#FF4444]', 'bg-[#4444FF]', 'bg-[#FFFF44]', 'bg-[#44FF44]'][i]} shadow-[0_4px_15px_rgba(0,0,0,0.5)]`}></div>
+                           <span className="leading-[0.9] pr-4 sm:pr-8 text-lg sm:text-xl md:text-2xl lg:text-3xl whitespace-normal break-words uppercase flex-1">{opt}</span>
+                           <div className="absolute right-0 top-0 bottom-0 w-2 opacity-20" style={{ backgroundColor: ['#FF4444', '#4444FF', '#FFFF44', '#44FF44'][i] }}></div>
+                        </motion.div>
+                     ))}
                   </div>
 
-                  <div className="flex flex-col items-center">
+                  <div className="flex flex-col xl:flex-row items-center gap-8 w-full justify-center">
                     {(currentQ as any).imageUrl ? (
                       <motion.div 
                         initial={{ rotate: 2, scale: 0.9 }}
                         animate={{ rotate: -1, scale: 1 }}
-                        className="w-full max-w-[80%] md:max-w-full aspect-video rounded-[3rem] overflow-hidden border-[10px] md:border-[12px] border-white/5 shadow-[0_40px_80px_rgba(0,0,0,0.5)] mb-8 md:mb-16"
+                        className="w-full xl:w-1/2 max-w-sm aspect-video rounded-3xl overflow-hidden border border-white/10 shadow-2xl"
                       >
                          <img src={(currentQ as any).imageUrl} alt="Combat Intel" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                       </motion.div>
-                    ) : (
-                      <div className="w-full max-w-[80%] md:max-w-full aspect-video rounded-[3rem] md:rounded-[4rem] bg-white/[0.02] border-4 border-dashed border-white/10 flex items-center justify-center mb-8 md:mb-16 relative overflow-hidden">
-                         <div className="absolute inset-0 bg-grid opacity-20"></div>
-                         <Zap size={80} className="text-white/5 animate-pulse relative z-10 md:w-[120px] md:h-[120px]" />
-                      </div>
-                    )}
+                    ) : null}
 
-                    <div className="grid grid-cols-2 gap-8 md:gap-16 w-full max-w-md">
-                       <div className="text-center group">
-                          <motion.div 
-                            key={responseCount}
-                            initial={{ scale: 1.5, color: '#00FF00' }}
-                            animate={{ scale: 1, color: '#FFFFFF' }}
-                            className="text-6xl md:text-8xl font-black italic tracking-tighter leading-none"
-                          >
-                            {responseCount}
-                          </motion.div>
-                          <div className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.5em] text-[#00FF00] mt-2 md:mt-4">Нийт хариулт</div>
-                       </div>
-                       <div className="text-center">
-                          <div className="text-6xl md:text-8xl font-black italic tracking-tighter leading-none text-white/20">
-                            {players.length}
-                          </div>
-                          <div className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.5em] text-white/10 mt-2 md:mt-4">Тоглогчид</div>
-                       </div>
+                    <div className="flex flex-col gap-6 w-full xl:w-1/2 max-w-sm">
+                      <div className="grid grid-cols-2 gap-6 w-full">
+                         <div className="text-center group bg-white/5 rounded-3xl p-4 border border-white/5">
+                            <motion.div 
+                              key={responseCount}
+                              initial={{ scale: 1.5, color: '#00FF00' }}
+                              animate={{ scale: 1, color: '#FFFFFF' }}
+                              className="text-4xl md:text-6xl font-black italic tracking-tighter leading-none"
+                            >
+                              {responseCount}
+                            </motion.div>
+                            <div className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-[#00FF00] mt-2">Хариулт</div>
+                         </div>
+                         <div className="text-center bg-white/5 rounded-3xl p-4 border border-white/5">
+                            <div className="text-4xl md:text-6xl font-black italic tracking-tighter leading-none text-white/50">
+                              {players.length}
+                            </div>
+                            <div className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-white/30 mt-2">Тоглогч</div>
+                         </div>
+                      </div>
+
+                      {/* Live Leaderboard */}
+                      <div className="w-full bg-white/[0.02] rounded-3xl border border-white/5 p-4 md:p-6 shadow-2xl relative overflow-hidden">
+                         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#00FF00]/50 to-transparent"></div>
+                         <div className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 mb-4 text-center">ШУУД ЧАНСАА (ТОП 5)</div>
+                         <div className="space-y-2">
+                            {[...players]
+                              .sort((a, b) => b.score - a.score)
+                              .slice(0, 5)
+                              .map((p, i) => (
+                                <motion.div 
+                                  key={p.uid} 
+                                  layout 
+                                  className="flex items-center justify-between p-2 sm:p-3 bg-white/5 rounded-2xl border border-white/5"
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-[0.6rem] flex items-center justify-center text-xs sm:text-sm font-black
+                                      ${i === 0 ? 'bg-[#FFFF44] text-black shadow-[0_0_15px_rgba(255,255,68,0.3)]' : 
+                                        i === 1 ? 'bg-gray-300 text-black shadow-[0_0_15px_rgba(209,213,219,0.3)]' : 
+                                        i === 2 ? 'bg-[#CD7F32] text-white shadow-[0_0_15px_rgba(205,127,50,0.3)]' : 
+                                        'bg-white/10 text-white/50'}
+                                    `}>
+                                      {i + 1}
+                                    </div>
+                                    <div className="font-black italic text-xs sm:text-sm leading-tight truncate max-w-[100px] sm:max-w-[150px] uppercase">{p.name}</div>
+                                  </div>
+                                  <div className="font-black italic tracking-tighter text-[#00FF00] text-sm sm:text-base">{p.score}</div>
+                                </motion.div>
+                            ))}
+                            {players.length === 0 && (
+                              <div className="text-center text-white/20 italic text-sm py-4">Тоглогч алга байна</div>
+                            )}
+                         </div>
+                      </div>
                     </div>
                   </div>
                </div>
@@ -474,7 +511,7 @@ export default function HostGame({ quizId, onClose }: HostGameProps) {
               <motion.div 
                 initial={{ y: 50 }}
                 animate={{ y: 0 }}
-                className="bg-[#00FF00] text-black py-12 px-6 md:py-20 md:px-12 rounded-[3rem] md:rounded-[5rem] text-4xl sm:text-5xl md:text-[8vw] font-black uppercase italic tracking-[-0.08em] leading-[0.8] mb-16 shadow-[0_20px_50px_rgba(0,255,0,0.3)] border-4 md:border-8 border-black relative overflow-hidden"
+                className="bg-[#00FF00] text-black py-12 px-6 md:py-20 md:px-12 rounded-[3rem] md:rounded-[5rem] text-4xl sm:text-5xl md:text-[8vw] font-black uppercase italic tracking-[-0.08em] leading-[0.8] mb-16 shadow-2xl shadow-[#00FF00]/20 border-none relative overflow-hidden"
               >
                 <div className="relative z-10 break-words">{currentQ.options[currentQ.correctIndex]}</div>
                 <div className="absolute top-0 right-0 p-8 opacity-10"><CheckCircle2 className="w-[120px] h-[120px] md:w-[200px] md:h-[200px]" /></div>

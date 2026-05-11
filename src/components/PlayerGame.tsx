@@ -50,6 +50,8 @@ export default function PlayerGame({ onClose }: PlayerGameProps) {
   const [name, setName] = useState(() => localStorage.getItem('quiz_name') || '');
   const [error, setError] = useState('');
   const [session, setSession] = useState<GameSession | null>(null);
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const questionsRef = useRef<Question[]>([]);
   const [player, setPlayer] = useState<Player | null>(null);
   const [allPlayers, setAllPlayers] = useState<Player[]>([]);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
@@ -108,6 +110,15 @@ export default function PlayerGame({ onClose }: PlayerGameProps) {
 
       const sData = { id: snap.docs[0].id, ...snap.docs[0].data() } as GameSession;
       setSession(sData);
+
+      try {
+        const qSnap = await getDocs(query(collection(db, `quizzes/${sData.quizId}/questions`)));
+        const qs = qSnap.docs.map(d => ({ id: d.id, ...d.data() } as Question));
+        setQuestions(qs);
+        questionsRef.current = qs;
+      } catch (err) {
+        console.error("Failed to prefetch questions:", err);
+      }
       
       const savedName = localStorage.getItem('quiz_name');
       if (step === 'JOIN') {
@@ -227,20 +238,29 @@ export default function PlayerGame({ onClose }: PlayerGameProps) {
       setIsPaused(sData.status === 'QUESTION' && sData.currentQuestionIndex >= 0 && (sData as any).isPaused);
 
       if (sData.status === 'QUESTION' && sData.currentQuestionIndex !== currentIndexRef.current && sData.currentQuestionIndex >= 0) {
-         console.log("New question detected, fetching quiz questions...");
+         console.log("New question detected, applying instantly...");
          currentIndexRef.current = sData.currentQuestionIndex;
-         setHasAnswered(false);
-         setIsCorrect(null);
-         try {
-           const qSnap = await getDocs(query(collection(db, `quizzes/${sData.quizId}/questions`)));
-           const qs = qSnap.docs.map(d => ({ id: d.id, ...d.data() } as Question));
-           if (qs[sData.currentQuestionIndex]) {
-             setCurrentQuestion(qs[sData.currentQuestionIndex]);
-           } else {
-             console.error("Question not found at index:", sData.currentQuestionIndex);
+         
+         const qs = questionsRef.current;
+         if (qs[sData.currentQuestionIndex]) {
+           setCurrentQuestion(qs[sData.currentQuestionIndex]);
+           setHasAnswered(false);
+           setIsCorrect(null);
+         } else {
+           // Fallback if not prefetched
+           try {
+             const qSnap = await getDocs(query(collection(db, `quizzes/${sData.quizId}/questions`)));
+             const fetchedQs = qSnap.docs.map(d => ({ id: d.id, ...d.data() } as Question));
+             setQuestions(fetchedQs);
+             questionsRef.current = fetchedQs;
+             if (fetchedQs[sData.currentQuestionIndex]) {
+               setCurrentQuestion(fetchedQs[sData.currentQuestionIndex]);
+               setHasAnswered(false);
+               setIsCorrect(null);
+             }
+           } catch (err) {
+             console.error("Failed to fetch questions fallback:", err);
            }
-         } catch (err) {
-           console.error("Failed to fetch questions for player:", err);
          }
       }
     });
@@ -453,11 +473,13 @@ export default function PlayerGame({ onClose }: PlayerGameProps) {
                   </AnimatePresence>
 
                   {!hasAnswered ? (
-                    <div className="flex flex-col gap-4 h-full">
-                       <div className="text-center mb-8">
-                          <div className="text-[#00FF00] font-black uppercase tracking-[0.6em] text-[10px] mb-4">Асуулт ирлээ</div>
-                          <h2 className="text-2xl md:text-3xl font-black italic tracking-tighter leading-tight mb-6 px-4 whitespace-pre-wrap">{currentQuestion.text}</h2>
-                          <div className="h-3 bg-white/5 rounded-full overflow-hidden border border-white/5 p-[2px]">
+                    <div className="flex flex-col gap-4 h-[70vh] overflow-hidden">
+                       <div className="text-center shrink-0 flex flex-col max-h-[40%]">
+                          <div className="text-[#00FF00] font-black uppercase tracking-[0.6em] text-[10px] mb-2 shrink-0">Асуулт ирлээ</div>
+                          <div className="overflow-y-auto custom-scrollbar px-4 mb-4 flex-1 break-words flex flex-col justify-center">
+                             <h2 className={`font-black italic tracking-tighter leading-tight whitespace-pre-wrap ${currentQuestion.text.length > 100 ? 'text-lg md:text-xl' : currentQuestion.text.length > 50 ? 'text-xl md:text-2xl' : 'text-2xl md:text-3xl'}`}>{currentQuestion.text}</h2>
+                          </div>
+                          <div className="h-3 bg-white/5 rounded-full overflow-hidden border border-white/5 p-[2px] shrink-0">
                              <motion.div 
                                initial={{ width: "100%" }}
                                animate={{ width: "0%" }}
@@ -467,28 +489,32 @@ export default function PlayerGame({ onClose }: PlayerGameProps) {
                           </div>
                        </div>
                        
-                       <div className="flex-1 grid grid-cols-1 gap-4">
-                         {currentQuestion.options.map((opt, i) => (
-                           <motion.button
-                              key={i}
-                              whileTap={{ scale: 0.92 }}
-                              onClick={() => submitChoice(i)}
-                              className={`p-8 rounded-[2rem] flex items-center justify-between border-4 border-black transition-all ${SHAPES[i].color} text-black relative overflow-hidden group shadow-2xl active:shadow-none translate-y-[-8px] active:translate-y-0`}
-                           >
-                              <div className="flex items-center gap-8 relative z-10 w-full">
-                                 <div className="flex-shrink-0 opacity-20 group-hover:scale-125 transition-transform">
-                                    {SHAPES[i].icon}
-                                 </div>
-                                 <span className="text-2xl lg:text-4xl font-black italic tracking-[-0.05em] leading-[0.85] text-left uppercase whitespace-pre-wrap break-words">{opt}</span>
-                              </div>
-                              <div className="absolute right-0 top-1/2 -translate-y-1/2 h-full w-24 bg-black/5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                 <Send size={40} />
-                              </div>
-                              <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-20 transition-all rotate-12 scale-150">
-                                 {SHAPES[i].icon}
-                              </div>
-                           </motion.button>
-                         ))}
+                       <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 pb-4">
+                         <div className="flex flex-col gap-4 min-h-min">
+                           {currentQuestion.options.map((opt, i) => (
+                             <motion.button
+                                key={i}
+                                whileTap={{ scale: 0.92 }}
+                                onClick={() => submitChoice(i)}
+                                className={`p-6 sm:p-8 rounded-[2rem] flex items-center justify-between border-4 border-black transition-all ${SHAPES[i].color} text-black relative overflow-hidden group shadow-[0_8px_0_0_rgba(0,0,0,1)] active:shadow-none translate-y-0 active:translate-y-2 shrink-0`}
+                             >
+                                <div className="flex items-center gap-4 sm:gap-8 relative z-10 w-full overflow-hidden">
+                                   <div className="flex-shrink-0 opacity-20 group-hover:scale-125 transition-transform w-[30px] h-[30px] sm:w-[40px] sm:h-[40px] flex items-center justify-center">
+                                      {SHAPES[i].icon}
+                                   </div>
+                                   <div className="text-left flex-1 min-w-0">
+                                      <span className="text-lg sm:text-2xl lg:text-4xl font-black italic tracking-[-0.05em] leading-[0.85] uppercase whitespace-normal break-words inline-block w-full">{opt}</span>
+                                   </div>
+                                </div>
+                                <div className="absolute right-0 top-1/2 -translate-y-1/2 h-full w-16 sm:w-24 bg-black/5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                   <Send className="w-8 h-8 sm:w-10 sm:h-10" />
+                                </div>
+                                <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-20 transition-all rotate-12 scale-150 pointer-events-none">
+                                   {SHAPES[i].icon}
+                                </div>
+                             </motion.button>
+                           ))}
+                         </div>
                        </div>
                     </div>
                   ) : (
@@ -514,7 +540,7 @@ export default function PlayerGame({ onClose }: PlayerGameProps) {
 
              {session.status === 'REVEAL' && (
                 <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center w-full px-2">
-                  <div className={`p-8 md:p-16 rounded-[3rem] md:rounded-[5rem] shadow-[15px_15px_0_0_rgba(0,0,0,1)] md:shadow-[40px_40px_0_0_rgba(0,0,0,1)] border-[8px] md:border-[12px] border-black ${isCorrect ? 'bg-[#00FF00] text-black shadow-[#008800]' : 'bg-[#FF4444] text-white shadow-[#880000]'}`}>
+                  <div className={`p-8 md:p-16 rounded-[3rem] shadow-2xl border-2 border-black/20 ${isCorrect ? 'bg-[#00FF00] text-black shadow-[#00FF00]/30' : 'bg-[#FF4444] text-white shadow-[#FF4444]/30'}`}>
                      <motion.div
                        initial={{ y: 20 }}
                        animate={{ y: 0 }}
@@ -540,7 +566,7 @@ export default function PlayerGame({ onClose }: PlayerGameProps) {
                        </div>
                        <div className="bg-white/5 p-8 rounded-[2.5rem] border-4 border-white/5">
                           <div className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20 mb-4 italic">ЧАНСАА:</div>
-                          <div className="text-5xl font-black italic tracking-tighter text-white">#{myRank}</div>
+                          <div className="text-4xl md:text-5xl font-black italic tracking-tighter text-white">#{myRank} <span className="text-xl md:text-2xl text-white/40">/ {allPlayers.length}</span></div>
                        </div>
                     </div>
                   )}
@@ -553,11 +579,11 @@ export default function PlayerGame({ onClose }: PlayerGameProps) {
                    <motion.div 
                      initial={{ scale: 0.9, y: 50 }}
                      animate={{ scale: 1, y: 0 }}
-                     className="bg-white text-black p-8 md:p-16 rounded-[3rem] md:rounded-[5rem] shadow-[15px_15px_0_0_rgba(0,0,0,1)] md:shadow-[30px_30px_0_0_rgba(0,0,0,1)] border-8 md:border-[12px] border-black relative overflow-hidden"
+                     className="bg-white text-black p-8 md:p-16 rounded-[3rem] shadow-2xl shadow-white/10 border-none relative overflow-hidden"
                    >
                       <div className="relative z-10 w-full overflow-hidden">
                         <div className="text-xs font-black uppercase tracking-[0.5em] opacity-40 mb-4 md:mb-8 break-words">Нийт чансаа</div>
-                        <div className="text-7xl md:text-[10rem] font-black italic tracking-[-0.1em] leading-none mb-6 md:mb-8 break-words">#{myRank}</div>
+                        <div className="text-6xl sm:text-7xl md:text-[8rem] font-black italic tracking-[-0.1em] leading-none mb-6 md:mb-8 break-words flex flex-col items-center gap-2">#{myRank} <span className="text-2xl sm:text-3xl md:text-4xl text-black/40 tracking-normal">/ {allPlayers.length}</span></div>
                         <div className="pt-8 md:pt-12 border-t-8 border-black/5 flex items-center justify-center gap-4 md:gap-6 text-2xl md:text-3xl font-black italic tracking-[-0.05em] flex-wrap">
                            {player?.streak || 0} <Zap size={40} className="fill-[#00FF00] -rotate-12" /> <span className="opacity-40">ДАРААЛСАН</span>
                         </div>
@@ -586,7 +612,7 @@ export default function PlayerGame({ onClose }: PlayerGameProps) {
                       <Trophy size={140} className="text-[#FFFF44] mx-auto drop-shadow-[0_0_50px_#FFFF44]" />
                    </motion.div>
                    
-                   <div className="bg-[#00FF00] text-black p-8 md:p-16 rounded-[3rem] md:rounded-[5rem] shadow-[15px_15px_0_0_rgba(0,0,0,1)] md:shadow-[30px_30px_0_0_rgba(0,0,0,1)] border-8 md:border-[12px] border-black relative overflow-hidden">
+                   <div className="bg-[#00FF00] text-black p-8 md:p-16 rounded-[3rem] shadow-2xl shadow-[#00FF00]/30 border-none relative overflow-hidden">
                       <div className="relative z-10">
                         <div className="text-[10px] font-black uppercase tracking-[0.6em] opacity-40 mb-4 md:mb-6 italic break-words">Аренагийн ялагч</div>
                         <div className="text-5xl md:text-8xl font-black italic tracking-[-0.08em] leading-[0.8] mb-8 md:mb-12 uppercase text-center break-words max-w-[90vw] mx-auto">{name}</div>
@@ -598,7 +624,7 @@ export default function PlayerGame({ onClose }: PlayerGameProps) {
                            </div>
                            <div className="flex flex-col sm:flex-row items-center justify-between px-4 md:px-8 gap-2">
                              <span className="text-[10px] text-center sm:text-left font-black uppercase tracking-[0.4em] opacity-30">Ялалтын бүртгэл</span>
-                             <span className="text-4xl md:text-5xl font-black italic tracking-tighter">#{myRank}</span>
+                             <span className="text-3xl sm:text-4xl md:text-5xl font-black italic tracking-tighter">#{myRank} <span className="text-xl sm:text-2xl text-black/40">/ {allPlayers.length}</span></span>
                            </div>
                         </div>
                       </div>

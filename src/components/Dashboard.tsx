@@ -122,7 +122,7 @@ export default function Dashboard({ onStartGame, onCreateQuiz, onEditQuiz, onJoi
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: idx * 0.05 }}
-              className="group relative aspect-[4/3] bg-white/[0.03] border-4 border-white/5 rounded-[3rem] p-10 hover:border-[#00FF00]/30 hover:bg-white/[0.05] transition-all flex flex-col justify-between overflow-hidden"
+              className="group relative min-h-[320px] bg-white/[0.03] border-4 border-white/5 rounded-[3rem] p-8 md:p-10 hover:border-[#00FF00]/30 hover:bg-white/[0.05] transition-all flex flex-col justify-between overflow-hidden"
             >
               <div className="relative z-10">
                 <div className="flex justify-between items-start mb-10">
