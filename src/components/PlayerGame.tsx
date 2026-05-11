@@ -58,6 +58,7 @@ export default function PlayerGame({ onClose }: PlayerGameProps) {
   const [hasAnswered, setHasAnswered] = useState(false);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [pointsEarned, setPointsEarned] = useState(0);
+  const [revealTimeoutFinished, setRevealTimeoutFinished] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [loading, setLoading] = useState(false);
   const controls = useAnimation();
@@ -281,6 +282,18 @@ export default function PlayerGame({ onClose }: PlayerGameProps) {
     };
   }, [step, session?.id]);
 
+  useEffect(() => {
+    if (session?.status === 'REVEAL') {
+      setRevealTimeoutFinished(false);
+      const timer = setTimeout(() => {
+        setRevealTimeoutFinished(true);
+      }, 3000);
+      return () => clearTimeout(timer);
+    } else {
+      setRevealTimeoutFinished(false);
+    }
+  }, [session?.status]);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const submitChoice = async (choiceIndex: number) => {
@@ -413,7 +426,7 @@ export default function PlayerGame({ onClose }: PlayerGameProps) {
             </div>
             <h2 className="text-6xl font-black uppercase italic tracking-[-0.05em] mb-4">ТАНЫ НЭР</h2>
             <div className="text-[#00FF00] font-black uppercase tracking-[0.5em] text-[10px] mb-12">ӨӨРИЙН НЭРИЙГ БИЧНЭ ҮҮ</div>
-            <div className="space-y-8">
+            <div className="space-y-6 flex flex-col items-center">
               <input 
                 type="text" 
                 maxLength={15}
@@ -421,12 +434,12 @@ export default function PlayerGame({ onClose }: PlayerGameProps) {
                 autoFocus
                 value={name}
                 onChange={e => setName(e.target.value.toUpperCase())}
-                className="w-full bg-white/[0.03] text-white rounded-[2rem] p-10 text-center text-5xl font-black outline-none border-4 border-white/5 focus:border-[#00FF00] transition-all"
+                className="w-full max-w-sm bg-white/[0.03] text-white rounded-3xl p-6 text-center text-2xl md:text-3xl font-black outline-none border-4 border-white/5 focus:border-[#00FF00] transition-all"
               />
               <button 
                 onClick={handleJoinClick}
                 disabled={!name.trim()}
-                className="w-full bg-[#00FF00] text-black py-8 rounded-[2rem] font-black text-4xl uppercase italic tracking-[-0.05em] transition-all duration-300 hover:scale-[1.02] active:scale-95 shadow-[0_15px_30px_rgba(0,255,0,0.2)] hover:shadow-[0_20px_50px_rgba(0,255,0,0.4)] disabled:opacity-50"
+                className="w-full max-w-sm bg-[#00FF00] text-black py-6 rounded-3xl font-black text-2xl md:text-3xl uppercase italic tracking-[-0.05em] transition-all duration-300 hover:scale-[1.02] active:scale-95 shadow-[0_15px_30px_rgba(0,255,0,0.2)] disabled:opacity-50"
               >
                 ХАДГАЛАХ
               </button>
@@ -473,10 +486,10 @@ export default function PlayerGame({ onClose }: PlayerGameProps) {
                   </AnimatePresence>
 
                   {!hasAnswered ? (
-                    <div className="flex flex-col gap-4 h-[70vh] overflow-hidden">
-                       <div className="text-center shrink-0 flex flex-col max-h-[40%]">
+                    <div className="flex flex-col gap-4 w-full">
+                       <div className="text-center shrink-0 flex flex-col mb-2">
                           <div className="text-[#00FF00] font-black uppercase tracking-[0.6em] text-[10px] mb-2 shrink-0">Асуулт ирлээ</div>
-                          <div className="overflow-y-auto custom-scrollbar px-4 mb-4 flex-1 break-words flex flex-col justify-center">
+                          <div className="px-4 mb-4 break-words flex flex-col justify-center">
                              <h2 className={`font-black italic tracking-tighter leading-tight whitespace-pre-wrap ${currentQuestion.text.length > 100 ? 'text-lg md:text-xl' : currentQuestion.text.length > 50 ? 'text-xl md:text-2xl' : 'text-2xl md:text-3xl'}`}>{currentQuestion.text}</h2>
                           </div>
                           <div className="h-3 bg-white/5 rounded-full overflow-hidden border border-white/5 p-[2px] shrink-0">
@@ -489,32 +502,24 @@ export default function PlayerGame({ onClose }: PlayerGameProps) {
                           </div>
                        </div>
                        
-                       <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 pb-4">
-                         <div className="flex flex-col gap-4 min-h-min">
-                           {currentQuestion.options.map((opt, i) => (
-                             <motion.button
-                                key={i}
-                                whileTap={{ scale: 0.92 }}
-                                onClick={() => submitChoice(i)}
-                                className={`p-6 sm:p-8 rounded-[2rem] flex items-center justify-between border-4 border-black transition-all ${SHAPES[i].color} text-black relative overflow-hidden group shadow-[0_8px_0_0_rgba(0,0,0,1)] active:shadow-none translate-y-0 active:translate-y-2 shrink-0`}
-                             >
-                                <div className="flex items-center gap-4 sm:gap-8 relative z-10 w-full overflow-hidden">
-                                   <div className="flex-shrink-0 opacity-20 group-hover:scale-125 transition-transform w-[30px] h-[30px] sm:w-[40px] sm:h-[40px] flex items-center justify-center">
-                                      {SHAPES[i].icon}
-                                   </div>
-                                   <div className="text-left flex-1 min-w-0">
-                                      <span className="text-lg sm:text-2xl lg:text-4xl font-black italic tracking-[-0.05em] leading-[0.85] uppercase whitespace-normal break-words inline-block w-full">{opt}</span>
-                                   </div>
-                                </div>
-                                <div className="absolute right-0 top-1/2 -translate-y-1/2 h-full w-16 sm:w-24 bg-black/5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                   <Send className="w-8 h-8 sm:w-10 sm:h-10" />
-                                </div>
-                                <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-20 transition-all rotate-12 scale-150 pointer-events-none">
-                                   {SHAPES[i].icon}
-                                </div>
-                             </motion.button>
-                           ))}
-                         </div>
+                       <div className="flex flex-col gap-3 min-h-min w-full pb-8">
+                         {currentQuestion.options.map((opt, i) => (
+                           <motion.button
+                              key={i}
+                              whileTap={{ scale: 0.92 }}
+                              onClick={() => submitChoice(i)}
+                              className={`p-4 sm:p-6 lg:p-8 rounded-2xl lg:rounded-[2rem] flex items-center justify-between border-2 sm:border-4 border-black transition-all ${SHAPES[i].color} text-black relative overflow-hidden group shadow-[0_6px_0_0_rgba(0,0,0,1)] lg:shadow-[0_8px_0_0_rgba(0,0,0,1)] active:shadow-none translate-y-0 active:translate-y-1 lg:active:translate-y-2 shrink-0`}
+                           >
+                              <div className="flex items-center gap-3 sm:gap-6 relative z-10 w-full overflow-hidden">
+                                 <div className="flex-shrink-0 opacity-20 group-hover:scale-125 transition-transform w-[24px] h-[24px] sm:w-[32px] sm:h-[32px] lg:w-[40px] lg:h-[40px] flex items-center justify-center">
+                                    {SHAPES[i].icon}
+                                 </div>
+                                 <div className="text-left flex-1 min-w-0 flex items-center">
+                                    <span className="text-base sm:text-xl lg:text-3xl font-black italic tracking-[-0.05em] leading-[1] uppercase whitespace-normal break-words inline-block w-full">{opt}</span>
+                                 </div>
+                              </div>
+                           </motion.button>
+                         ))}
                        </div>
                     </div>
                   ) : (
@@ -539,38 +544,51 @@ export default function PlayerGame({ onClose }: PlayerGameProps) {
              )}
 
              {session.status === 'REVEAL' && (
-                <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center w-full px-2">
-                  <div className={`p-8 md:p-16 rounded-[3rem] shadow-2xl border-2 border-black/20 ${isCorrect ? 'bg-[#00FF00] text-black shadow-[#00FF00]/30' : 'bg-[#FF4444] text-white shadow-[#FF4444]/30'}`}>
+                revealTimeoutFinished ? (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center w-full px-2 flex flex-col items-center justify-center min-h-[50vh]">
+                     <div className="text-[#00FF00] font-black uppercase tracking-[0.6em] text-[10px] mb-8 shrink-0 italic">Цааш үргэлжлэхийг хүлээж байна</div>
                      <motion.div
-                       initial={{ y: 20 }}
-                       animate={{ y: 0 }}
-                       className="mb-8 md:mb-12"
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                        className="mb-8 opacity-20"
                      >
-                       {isCorrect ? <CheckCircle2 size={120} className="mx-auto md:w-[160px] md:h-[160px]" strokeWidth={3} /> : <XCircle size={120} className="mx-auto md:w-[160px] md:h-[160px]" strokeWidth={3} />}
+                        <Zap size={64} className="text-[#00FF00]" />
                      </motion.div>
-                     <h2 className="text-5xl md:text-8xl font-black italic uppercase tracking-[-0.08em] leading-none mb-8 md:mb-12 break-words max-w-[90vw] mx-auto">{isCorrect ? 'ЗӨВ!' : 'БУРУУ!'}</h2>
-                     
-                     <div className="flex flex-col items-center pt-8 md:pt-12 border-t-8 border-current/10">
-                        <div className="text-[10px] font-black uppercase tracking-[0.6em] opacity-40 mb-2 md:mb-4">ОНОО:</div>
-                        <div className="text-5xl md:text-7xl font-black italic tracking-tighter leading-none">+{pointsEarned} <span className="text-lg md:text-xl">ОНОО</span></div>
-                     </div>
-                  </div>
-                  
-                  {player && (
-                    <div className="mt-16 grid grid-cols-2 gap-6">
-                       <div className="bg-white/5 p-8 rounded-[2.5rem] border-4 border-white/5">
-                          <div className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20 mb-4 italic">ДАРААЛСАН</div>
-                          <div className="text-5xl font-black italic tracking-tighter flex items-center justify-center gap-4 text-[#00FF00]">
-                             <Zap size={32} fill="currentColor" /> {player.streak}
-                          </div>
-                       </div>
-                       <div className="bg-white/5 p-8 rounded-[2.5rem] border-4 border-white/5">
-                          <div className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20 mb-4 italic">ЧАНСАА:</div>
-                          <div className="text-4xl md:text-5xl font-black italic tracking-tighter text-white">#{myRank} <span className="text-xl md:text-2xl text-white/40">/ {allPlayers.length}</span></div>
+                  </motion.div>
+                ) : (
+                  <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center w-full px-2">
+                    <div className={`p-8 md:p-16 rounded-[3rem] shadow-2xl border-2 border-black/20 ${isCorrect ? 'bg-[#00FF00] text-black shadow-[#00FF00]/30' : 'bg-[#FF4444] text-white shadow-[#FF4444]/30'}`}>
+                       <motion.div
+                         initial={{ y: 20 }}
+                         animate={{ y: 0 }}
+                         className="mb-8 md:mb-12"
+                       >
+                         {isCorrect ? <CheckCircle2 size={120} className="mx-auto md:w-[160px] md:h-[160px]" strokeWidth={3} /> : <XCircle size={120} className="mx-auto md:w-[160px] md:h-[160px]" strokeWidth={3} />}
+                       </motion.div>
+                       <h2 className="text-5xl md:text-8xl font-black italic uppercase tracking-[-0.08em] leading-none mb-8 md:mb-12 break-words max-w-[90vw] mx-auto">{isCorrect ? 'ЗӨВ!' : 'БУРУУ!'}</h2>
+                       
+                       <div className="flex flex-col items-center pt-8 md:pt-12 border-t-8 border-current/10">
+                          <div className="text-[10px] font-black uppercase tracking-[0.6em] opacity-40 mb-2 md:mb-4">ОНОО:</div>
+                          <div className="text-5xl md:text-7xl font-black italic tracking-tighter leading-none">+{pointsEarned} <span className="text-lg md:text-xl">ОНОО</span></div>
                        </div>
                     </div>
-                  )}
-                </motion.div>
+                    
+                    {player && (
+                      <div className="mt-16 grid grid-cols-2 gap-6">
+                         <div className="bg-white/5 p-8 rounded-[2.5rem] border-4 border-white/5">
+                            <div className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20 mb-4 italic">ДАРААЛСАН</div>
+                            <div className="text-5xl font-black italic tracking-tighter flex items-center justify-center gap-4 text-[#00FF00]">
+                               <Zap size={32} fill="currentColor" /> {player.streak}
+                            </div>
+                         </div>
+                         <div className="bg-white/5 p-8 rounded-[2.5rem] border-4 border-white/5">
+                            <div className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20 mb-4 italic">ЧАНСАА:</div>
+                            <div className="text-4xl md:text-5xl font-black italic tracking-tighter text-white">#{myRank} <span className="text-xl md:text-2xl text-white/40">/ {allPlayers.length}</span></div>
+                         </div>
+                      </div>
+                    )}
+                  </motion.div>
+                )
              )}
 
              {session.status === 'LEADERBOARD' && (

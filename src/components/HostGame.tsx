@@ -386,22 +386,22 @@ export default function HostGame({ quizId, onClose }: HostGameProps) {
                <motion.div 
                  initial={{ y: -40, opacity: 0 }}
                  animate={{ y: 0, opacity: 1 }}
-                 className="bg-white/5 p-8 md:p-12 xl:p-16 rounded-3xl md:rounded-[4rem] border-4 border-white/5 backdrop-blur-3xl relative overflow-hidden group shadow-3xl flex flex-col w-full"
+                 className="bg-white/5 p-6 md:p-8 xl:p-10 rounded-3xl md:rounded-[3rem] border-4 border-white/5 backdrop-blur-3xl relative overflow-hidden group shadow-3xl flex flex-col w-full"
                >
                   <div className="absolute -top-12 -right-12 p-4 opacity-[0.05] group-hover:opacity-10 transition-opacity rotate-12 pointer-events-none">
                     <Zap size={240} />
                   </div>
-                  <div className="flex items-center gap-4 mb-8 shrink-0">
+                  <div className="flex items-center gap-4 mb-6 shrink-0">
                      <div className="h-1 flex-1 bg-[#00FF00]"></div>
-                     <div className="text-[#00FF00] font-black uppercase tracking-[0.5em] text-[10px] md:text-sm shrink-0">АСУУЛТ {session.currentQuestionIndex + 1} // {questions.length}</div>
+                     <div className="text-[#00FF00] font-black uppercase tracking-[0.5em] text-[10px] md:text-xs shrink-0">АСУУЛТ {session.currentQuestionIndex + 1} // {questions.length}</div>
                      <div className="h-1 flex-1 bg-[#00FF00]"></div>
                   </div>
-                  <div className="flex-1 flex flex-col justify-center min-h-[150px]">
-                    <h2 className={`font-black italic uppercase tracking-[-0.05em] leading-[1.1] md:leading-[1] relative z-10 whitespace-pre-wrap text-center break-words w-full m-auto ${
-                      currentQ.text.length > 150 ? 'text-2xl md:text-4xl lg:text-5xl' : 
-                      currentQ.text.length > 80 ? 'text-3xl md:text-5xl lg:text-6xl' : 
-                      currentQ.text.length > 40 ? 'text-4xl md:text-6xl lg:text-[5.5rem]' : 
-                      'text-5xl md:text-7xl lg:text-[7rem]'
+                  <div className="flex-1 flex flex-col justify-center min-h-[100px] max-h-[30vh]">
+                    <h2 className={`font-black italic uppercase tracking-[-0.05em] leading-[1.1] md:leading-[1.1] relative z-10 whitespace-pre-wrap text-center break-words w-full m-auto ${
+                      currentQ.text.length > 150 ? 'text-lg md:text-2xl lg:text-3xl' : 
+                      currentQ.text.length > 80 ? 'text-xl md:text-3xl lg:text-4xl' : 
+                      currentQ.text.length > 40 ? 'text-2xl md:text-4xl lg:text-5xl' : 
+                      'text-3xl md:text-5xl lg:text-6xl'
                     }`}>
                       {currentQ.text}
                     </h2>
