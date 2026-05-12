@@ -352,7 +352,7 @@ export default function PlayerGame({ onClose }: PlayerGameProps) {
   }, [allPlayers, player]);
 
   return (
-    <div className="h-[100dvh] w-full flex flex-col items-center justify-center p-6 pb-24 md:pb-8 bg-[#0A0A0A] relative overflow-hidden font-sans">
+    <div className="min-h-[100dvh] w-full flex flex-col items-center justify-center p-6 pb-24 md:pb-8 bg-[#0A0A0A] relative font-sans">
       <GameBackground url={session?.backgroundImageUrl} />
 
       {loading && (
@@ -502,7 +502,7 @@ export default function PlayerGame({ onClose }: PlayerGameProps) {
                           </div>
                        </div>
                        
-                       <div className="flex-1 overflow-y-auto custom-scrollbar pr-1 pb-4">
+                       <div className="flex-1 w-full pb-4">
                          <div className="flex flex-col gap-3 w-full pb-8">
                            {currentQuestion.options.map((opt, i) => (
                              <motion.button

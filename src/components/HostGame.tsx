@@ -396,7 +396,7 @@ export default function HostGame({ quizId, onClose }: HostGameProps) {
                      <div className="text-[#00FF00] font-black uppercase tracking-[0.5em] text-[10px] md:text-xs shrink-0">АСУУЛТ {session.currentQuestionIndex + 1} // {questions.length}</div>
                      <div className="h-1 flex-1 bg-[#00FF00]"></div>
                   </div>
-                  <div className="flex-1 flex flex-col justify-center min-h-[100px] max-h-[30vh]">
+                  <div className="flex-1 flex flex-col justify-center min-h-[100px] max-h-[30vh] overflow-y-auto custom-scrollbar pr-2">
                     <h2 className={`font-black italic uppercase tracking-[-0.05em] leading-[1.1] md:leading-[1.1] relative z-10 whitespace-pre-wrap text-center break-words w-full m-auto ${
                       currentQ.text.length > 150 ? 'text-lg md:text-2xl lg:text-3xl' : 
                       currentQ.text.length > 80 ? 'text-xl md:text-3xl lg:text-4xl' : 
