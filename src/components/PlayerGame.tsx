@@ -352,7 +352,7 @@ export default function PlayerGame({ onClose }: PlayerGameProps) {
   }, [allPlayers, player]);
 
   return (
-    <div className="min-h-[100dvh] w-full flex flex-col items-center justify-center p-6 pb-24 md:pb-8 bg-[#0A0A0A] relative font-sans">
+    <div className="min-h-[100dvh] w-full flex flex-col items-center justify-start md:justify-center p-6 pb-24 md:pb-8 bg-[#0A0A0A] relative font-sans">
       <GameBackground url={session?.backgroundImageUrl} />
 
       {loading && (
@@ -448,7 +448,7 @@ export default function PlayerGame({ onClose }: PlayerGameProps) {
         )}
 
         {step === 'PLAYING' && session && (
-           <motion.div key="playing" className="w-full max-w-md z-10">
+           <motion.div key="playing" className="w-full max-w-md z-10 flex-1 flex flex-col justify-center">
              {session.status === 'LOBBY' && (
                 <div className="text-center">
                    <motion.div 
